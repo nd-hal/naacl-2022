@@ -7,9 +7,9 @@ library(kableExtra)
 library(ggpubr)
 
 read_one_file <- function(fname){
-
+fname2 <- paste("plotting_data",fname,sep="/")
 D <- read_csv(
-  fname
+  fname2
 ) %>%
   mutate_at(
     vars(
@@ -35,10 +35,10 @@ D <- read_csv(
     Metric = str_replace(Metric, "_bin", "")
   ) %>%
   mutate(
-    finetune=str_split_n(model, "_", 4)
+    finetune=str_split_fixed(model, "_", 5)[,4]
   ) %>%
   mutate(
-    model=str_split_n(model, "_", 5)
+    model=str_split_fixed(model, "_", 6)[,5]
   ) %>%
   mutate(
     Metric = replace( 
@@ -210,7 +210,7 @@ plot_one_dataset <- function(dataset.name, aDI, fN){
     )  +
     facet_wrap(
         ~ Task,
-       ncol=5,
+       ncol=3,
       scales="free_y"
     ) +
     geom_hline(
@@ -296,45 +296,44 @@ ggarrange(
   BERT.ADI, 
 #  RoBERTa.ADI,
   CNN.ADI,
-  nrow=2,
+  nrow=3,
   labels = c("BERT", "GloVe"),
   common.legend = TRUE, legend = "top",
   vjust=0.1
 )
 
 ggsave(
-  str_glue(
-    "merged_ADI.png"), 
-  width=10,
-  height=8
+  "merged_ADI_new.pdf", 
+  width=8,
+  height=18
 )
+knitr::plot_crop("merged_ADI_new.pdf")
 
 
 ggarrange(
   BERT.DI, 
   #RoBERTa.DI,
   CNN.DI,
-  nrow=2,
+  nrow=3,
   labels = c("BERT", "word2vec"),
   common.legend = TRUE, legend = "top",
   vjust=0.1
 )
 
 ggsave(
-  str_glue(
-    "merged_DI.png"), 
-  width=10,
-  height=8
+  "merged_DI_new.pdf", 
+  width=8,
+  height=18
 )
+knitr::plot_crop("merged_DI_new.pdf")
 
 ggsave(
-  str_glue(
-    "RoBERTa_TRUE_FALSE.png"), 
+  "RoBERTa_TRUE_FALSE_new.pdf", 
   RoBERTa.ADI,
-  width=15,
+  width=8,
   height=8
 )
-
+knitr::plot_crop("RoBERTa_TRUE_FALSE_new.pdf")
 
 
 # Results Table (see notes for columns)
@@ -627,13 +626,14 @@ plot_BERT_Psych <- function(){
       ggtitle("Effect of debiasing and intersectionality on Disparate Impact: BERT") 
   return(data.plot)
 }
+
 p <- plot_BERT_Psych()
 
 ggsave(
-  "BERT_debias_ADI.png", 
+  "BERT_debias_ADI_new.pdf", 
   p,
 height=6,
-width=10
+width=8
 )
 
 
